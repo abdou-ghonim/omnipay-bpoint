@@ -3,7 +3,7 @@
 /**
  * Stripe Abstract Request.
  */
-namespace Omnipay\Bpoint\Message;
+namespace Omnipay\BPoint\Message;
 
 /**
  * You can use any of the cards listed at https://stripe.com/docs/testing
@@ -14,12 +14,9 @@ namespace Omnipay\Bpoint\Message;
  */
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-    /**
-     * Live or Test Endpoint URL.
-     *
-     * @var string URL
-     */
-    protected $endpoint = 'https://www.bpoint.com.au/webapi/v2/';
+    public function getEndpoint() {
+      return 'https://www.bpoint.com.au/webapi/v2/txns/';
+    }
 
     public function getMerchantReference()
     {
@@ -31,9 +28,23 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->setParameter('merchantReference', $value);
     }
 
-    public function getEndpoint() {
-      return self::$endPoint;
+    public function getAmountOriginal() {
+      return $this->getParameter("amountOriginal");
     }
+
+    public function setAmountOriginal($value) {
+      return $this->setParameter('amountOriginal', $value);
+    }
+
+    public function getAmountSurcharge() {
+      return $this->getParameter("amountSurcharge");
+    }
+
+    public function setAmountSurcharge($value) {
+      return $this->setParameter('amountSurcharge', $value);
+    }
+
+
 
     /**
      * Get HTTP Method.
@@ -68,6 +79,10 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $httpResponse = $httpRequest
             ->setHeader('Authorization', 'Basic '.base64_encode($this->getUsername()."|".$this->getMerchantNumber().':'.$this->getPassword()))
             ->send();
+
+
+        var_dump($httpResponse);
+        var_dump($httpResponse->getBody());
 
         return $this->response = new Response($this, $httpResponse->json());
     }
@@ -122,22 +137,22 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
           "LastName" => $card->getLastName()
         ];
 
-        $data["Customer"]["Address"] = [
-          "AddressLine1" : "123 Fake Street",
-          "AddressLine2" : "",
-          "AddressLine3" : "",
-          "City" : "Melbourne",
-          "CountryCode" : "AUS",
-          "PostCode" : "3000",
-          "State" : "VIC"
-        ];
-        $data["Customer"]["ContactDetails"] = [
-          "EmailAddress" : "john.smith@email.com",
-          "FaxNumber" : "",
-          "HomePhoneNumber" : "",
-          "MobilePhoneNumber" : "",
-          "WorkPhoneNumber" : ""
-        ];
+#       $data["Customer"]["Address"] = [
+#         "AddressLine1" => "123 Fake Street",
+#         "AddressLine2" => "",
+#         "AddressLine3" => "",
+#         "City" => "Melbourne",
+#         "CountryCode" => "AUS",
+#         "PostCode" => "3000",
+#         "State" => "VIC"
+#       ];
+#       $data["Customer"]["ContactDetails"] = [
+#         "EmailAddress" => $card->getEmail(),
+#         "FaxNumber" => "",
+#         "HomePhoneNumber" => "",
+#         "MobilePhoneNumber" => "",
+#         "WorkPhoneNumber" => ""
+#       ];
 
         $data["Currency"] = $this->getCurrency();
 
@@ -209,5 +224,36 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
         return $data;
     }
+
+    public function getUsername()
+    {
+        return $this->getParameter('username');
+    }
+
+    public function setUsername($value)
+    {
+        return $this->setParameter('username', $value);
+    }
+
+    public function getMerchantNumber()
+    {
+        return $this->getParameter('merchantNumber');
+    }
+
+    public function setMerchantNumber($value)
+    {
+        return $this->setParameter('merchantNumber', $value);
+    }
+
+    public function getPassword()
+    {
+        return $this->getParameter('password');
+    }
+
+    public function setPassword($value)
+    {
+        return $this->setParameter('password', $value);
+    }
 }
+
 

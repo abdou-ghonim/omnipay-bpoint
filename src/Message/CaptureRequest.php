@@ -4,6 +4,9 @@ namespace Omnipay\BPoint\Message;
 
 class CaptureRequest extends AbstractRequest
 {
+    public function getAction() {
+      return "capture";
+    }
 
     public function getData()
     {

@@ -4,6 +4,9 @@ namespace Omnipay\BPoint\Message;
 
 class AuthorizeRequest extends AbstractRequest
 {
+    public function getAction() {
+      return "preauth";
+    }
 
     public function getData()
     {
