@@ -2,7 +2,7 @@
 
 namespace Omnipay\BPoint\Message;
 
-class AuthorizeRequest extends CaptureRequest
+class CaptureRequest extends AbstractRequest
 {
 
     public function getData()

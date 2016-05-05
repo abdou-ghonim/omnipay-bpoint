@@ -6,31 +6,11 @@
 namespace Omnipay\Bpoint\Message;
 
 /**
- * Stripe Abstract Request.
- *
- * This is the parent class for all BPoint requests.
- *
- * Test modes:
- *
- * Stripe accounts have test-mode API keys as well as live-mode
- * API keys. These keys can be active at the same time. Data
- * created with test-mode credentials will never hit the credit
- * card networks and will never cost anyone money.
- *
- * Unlike some gateways, there is no test mode endpoint separate
- * to the live mode endpoint, the Stripe API endpoint is the same
- * for test and for live.
- *
- * Setting the testMode flag on this gateway has no effect.  To
- * use test mode just use your test mode API key.
- *
  * You can use any of the cards listed at https://stripe.com/docs/testing
  * for testing.
  *
- * @see \Omnipay\Stripe\Gateway
- * @link https://stripe.com/docs/api
- *
- * @method \Omnipay\Stripe\Message\Response send()
+ * @see \Omnipay\Bpoint\Gateway
+ * @link https://bpoint.com/docs/api
  */
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
@@ -132,23 +112,47 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $data["AmountOriginal"] = $this->getAmountOriginal();
         $data["AmountSurcharge"] = $this->getAmountSurcharge();
 
+        $card = $this->getCard();
+
         $data["CardDetails"] = $this->getCardData();
+        $data["Customer"] = [];
+
+        $data["Customer"]["PersonalDetails"] = [
+          "FirstName" => $card->getFirstName(),
+          "LastName" => $card->getLastName()
+        ];
+
+        $data["Customer"]["Address"] = [
+          "AddressLine1" : "123 Fake Street",
+          "AddressLine2" : "",
+          "AddressLine3" : "",
+          "City" : "Melbourne",
+          "CountryCode" : "AUS",
+          "PostCode" : "3000",
+          "State" : "VIC"
+        ];
+        $data["Customer"]["ContactDetails"] = [
+          "EmailAddress" : "john.smith@email.com",
+          "FaxNumber" : "",
+          "HomePhoneNumber" : "",
+          "MobilePhoneNumber" : "",
+          "WorkPhoneNumber" : ""
+        ];
 
         $data["Currency"] = $this->getCurrency();
 
         $data["OriginalTxnNumber"] = null;
-        $data["Crn1"] = "test crn1";
-        $data["Crn2"] = "test crn2";
-        $data["Crn3"] = "test crn3";
-        $data["EmailAddress"] = "user@test.com";
+       #$data["Crn1"] = "test crn1";
+       #$data["Crn2"] = "test crn2";
+       #$data["Crn3"] = "test crn3";
+        $data["EmailAddress"] = $card->getEmail();
         $data["BillerCode"] = null;
-        $data["TestMode"] = false;
+        $data["TestMode"] = $this->getTestMode();
         $data["TokenisationMode"] = 0;
         $data["StoreCard"] = false;
         $data["SubType"] = "single";
         $data["Type"] = "internet";
 
-        #$data["Customer"] = [];
 
         $data["MerchantReference"] = $this->getMerchantReference();
 
