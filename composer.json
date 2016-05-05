@@ -1,0 +1,29 @@
+{
+    "name": "wakeless-net/omnipay-bpoint",
+    "type": "library",
+    "description": "BPOINT Payment Connector driver for the Omnipay payment processing library",
+    "keywords": [
+        "bpoint",
+        "merchant",
+        "omnipay",
+        "pay",
+        "payment"
+    ],
+    "homepage": "https://github.com/wakeless-net/omnipay-bpoint",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Currinda",
+            "homepage": "http://currinda.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Omnipay\\Bpoint\\" : "src/" }
+    },
+    "require": {
+        "omnipay/common": "~2.0"
+    },
+    "require-dev": {
+        "omnipay/tests": "~2.0"
+    }
+}
