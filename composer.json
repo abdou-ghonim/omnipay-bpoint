@@ -18,7 +18,7 @@
         }
     ],
     "autoload": {
-        "psr-4": { "Omnipay\\Bpoint\\" : "src/" }
+        "psr-4": { "Omnipay\\BPoint\\" : "src/" }
     },
     "require": {
         "omnipay/common": "~2.0"

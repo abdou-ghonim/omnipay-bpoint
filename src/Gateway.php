@@ -3,7 +3,7 @@
 /**
  * Stripe Gateway.
  */
-namespace Omnipay\Stripe;
+namespace Omnipay\BPoint;
 
 use Omnipay\Common\AbstractGateway;
 
