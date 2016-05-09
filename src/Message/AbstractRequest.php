@@ -45,6 +45,30 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
 
+    public function setCrn1($value) {
+      return $this->setParameter('crn1', $value);
+    }
+
+    function setTransactionReference($value) {
+      return $this->setParameter("transactionReference", $value);
+    }
+
+    function getTransactionReference() {
+      return $this->getParameter("transactionReference");
+    }
+
+    function setOriginalTxnNumber($value) {
+      return $this->setParameter("originalTxnNumber", $value);
+    }
+
+    function getOriginalTxnNumber() {
+      return $this->getParameter("originalTxnNumber");
+    }
+
+    public function getCrn1() {
+      return $this->getParameter('crn1');
+    }
+
 
     /**
      * Get HTTP Method.
@@ -61,28 +85,29 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function sendData($data)
     {
         // don't throw exceptions for 4xx errors
-        $this->httpClient->getEventDispatcher()->addListener(
-            'request.error',
-            function ($event) {
-                if ($event['response']->isClientError()) {
-                    $event->stopPropagation();
-                }
-            }
-        );
+       $this->httpClient->getEventDispatcher()->addListener(
+           'request.error',
+           function ($event) {
+               if ($event['response']->isClientError()) {
+                   $event->stopPropagation();
+              }
+           }
+       );
 
         $httpRequest = $this->httpClient->createRequest(
             $this->getHttpMethod(),
             $this->getEndpoint(),
-            null,
-            $data
+            null
         );
+
+        $encoded_data = json_encode(["TxnReq" => $data]);
+
+        $httpRequest->setBody($encoded_data, "application/json");
+
+        $auth_string = $this->getUsername()."|".$this->getMerchantNumber().':'.$this->getPassword();
         $httpResponse = $httpRequest
-            ->setHeader('Authorization', 'Basic '.base64_encode($this->getUsername()."|".$this->getMerchantNumber().':'.$this->getPassword()))
+            ->setHeader('Authorization', base64_encode($auth_string))
             ->send();
-
-
-        var_dump($httpResponse);
-        var_dump($httpResponse->getBody());
 
         return $this->response = new Response($this, $httpResponse->json());
     }
@@ -100,7 +125,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     protected function getCardData()
     {
         $card = $this->getCard();
-        $card->validate();
+        if($card) $card->validate();
 
         $data = [];
         $data["CardHolderName"] = $card->getName();
@@ -108,7 +133,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         if ($card->getCvv()) {
             $data['CVN'] = $card->getCvv();
         }
-        $data["ExpiryDate"] = $card->getExpiryMonth().$card->getExpiryYear();
+        $data["ExpiryDate"] = $card->getExpiryDate("my");
 
         return $data;
     }
@@ -118,49 +143,41 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     public function getData()
     {
-        $this->validate('amount', 'currency');
+        $this->validate("merchantNumber", "password", "username", 'amount', 'currency');
 
         $data = [];
 
         $data["Action"] = $this->getAction();
         $data["Amount"] = $this->getAmountInteger();
-        $data["AmountOriginal"] = $this->getAmountOriginal();
-        $data["AmountSurcharge"] = $this->getAmountSurcharge();
+        #$data["AmountOriginal"] = $this->getAmountOriginal();
+        #$data["AmountSurcharge"] = $this->getAmountSurcharge();
 
         $card = $this->getCard();
 
-        $data["CardDetails"] = $this->getCardData();
-        $data["Customer"] = [];
 
-        $data["Customer"]["PersonalDetails"] = [
-          "FirstName" => $card->getFirstName(),
-          "LastName" => $card->getLastName()
-        ];
+        if($card) {
+          $data["Customer"] = [];
+          $data["Customer"]["PersonalDetails"] = [
+            "FirstName" => $card->getFirstName(),
+            "LastName" => $card->getLastName()
+          ];
+          $data["EmailAddress"] = $card->getEmail();
 
-#       $data["Customer"]["Address"] = [
-#         "AddressLine1" => "123 Fake Street",
-#         "AddressLine2" => "",
-#         "AddressLine3" => "",
-#         "City" => "Melbourne",
-#         "CountryCode" => "AUS",
-#         "PostCode" => "3000",
-#         "State" => "VIC"
-#       ];
-#       $data["Customer"]["ContactDetails"] = [
-#         "EmailAddress" => $card->getEmail(),
-#         "FaxNumber" => "",
-#         "HomePhoneNumber" => "",
-#         "MobilePhoneNumber" => "",
-#         "WorkPhoneNumber" => ""
-#       ];
+          $data["Customer"]["ContactDetails"] = [
+            "EmailAddress" => $card->getEmail(),
+  #         "FaxNumber" => "",
+  #         "HomePhoneNumber" => "",
+  #         "MobilePhoneNumber" => "",
+  #         "WorkPhoneNumber" => ""
+          ];
+        }
 
         $data["Currency"] = $this->getCurrency();
 
-        $data["OriginalTxnNumber"] = null;
-       #$data["Crn1"] = "test crn1";
+      #$data["OriginalTxnNumber"] = null;
+        $data["Crn1"] = $this->getCrn1();
        #$data["Crn2"] = "test crn2";
        #$data["Crn3"] = "test crn3";
-        $data["EmailAddress"] = $card->getEmail();
         $data["BillerCode"] = null;
         $data["TestMode"] = $this->getTestMode();
         $data["TokenisationMode"] = 0;
@@ -169,58 +186,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $data["Type"] = "internet";
 
 
-        $data["MerchantReference"] = $this->getMerchantReference();
-
-        #$data["Order"] = [];
-
-        return $data;
-
-
-
-
-        $data = array();
-
-        $data['amount'] = $this->getAmountInteger();
-        $data['currency'] = strtolower($this->getCurrency());
-        $data['description'] = $this->getDescription();
-        $data['metadata'] = $this->getMetadata();
-        $data['capture'] = 'false';
-
-        if ($this->getStatementDescriptor()) {
-            $data['statement_descriptor'] = $this->getStatementDescriptor();
-        }
-        if ($this->getDestination()) {
-            $data['destination'] = $this->getDestination();
-        }
-
-        if ($this->getApplicationFee()) {
-            $data['application_fee'] = $this->getApplicationFeeInteger();
-        }
-
-        if ($this->getReceiptEmail()) {
-            $data['receipt_email'] = $this->getReceiptEmail();
-        }
-
-        if ($this->getSource()) {
-            $data['source'] = $this->getSource();
-        } elseif ($this->getCardReference()) {
-            $data['source'] = $this->getCardReference();
-            if ($this->getCustomerReference()) {
-                $data['customer'] = $this->getCustomerReference();
-            }
-        } elseif ($this->getToken()) {
-            $data['source'] = $this->getToken();
-            if ($this->getCustomerReference()) {
-                $data['customer'] = $this->getCustomerReference();
-            }
-        } elseif ($this->getCard()) {
-            $data['source'] = $this->getCardData();
-        } elseif ($this->getCustomerReference()) {
-            $data['customer'] = $this->getCustomerReference();
-        } else {
-            // one of cardReference, token, or card is required
-            $this->validate('source');
-        }
+        $data["MerchantReference"] = "123"; $this->getMerchantReference();
 
         return $data;
     }

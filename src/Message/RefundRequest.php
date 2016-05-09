@@ -2,15 +2,15 @@
 
 namespace Omnipay\BPoint\Message;
 
-class CaptureRequest extends AbstractRequest
+class RefundRequest extends AbstractRequest
 {
     public function getAction() {
-      return "capture";
+      return "refund";
     }
 
     public function getData()
     {
-        $this->validate('amount', 'currency', "originalTxnNumber");
+        $this->validate('amount', "crn1", "originalTxnNumber");
 
         $data = parent::getData();
         $data["OriginalTxnNumber"] = $this->getOriginalTxnNumber() ?: $this->getTransactionReference();
