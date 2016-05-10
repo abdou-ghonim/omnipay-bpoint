@@ -109,8 +109,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             ->setHeader('Authorization', base64_encode($auth_string))
             ->send();
 
-        var_dump((string)$httpResponse->getBody());
-
         return $this->response = new Response($this, $httpResponse->json());
     }
 
@@ -172,7 +170,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
         $data["Currency"] = $this->getCurrency();
 
-      #$data["OriginalTxnNumber"] = null;
         $data["Crn1"] = $this->getCrn1();
        #$data["Crn2"] = "test crn2";
        #$data["Crn3"] = "test crn3";
