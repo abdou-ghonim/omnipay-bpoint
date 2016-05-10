@@ -109,6 +109,8 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             ->setHeader('Authorization', base64_encode($auth_string))
             ->send();
 
+        var_dump((string)$httpResponse->getBody());
+
         return $this->response = new Response($this, $httpResponse->json());
     }
 
@@ -149,11 +151,11 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
         $data["Action"] = $this->getAction();
         $data["Amount"] = $this->getAmountInteger();
-        #$data["AmountOriginal"] = $this->getAmountOriginal();
-        #$data["AmountSurcharge"] = $this->getAmountSurcharge();
+
+        $data["AmountOriginal"] = (int)$this->getAmountOriginal();
+        $data["AmountSurcharge"] = (int)$this->getAmountSurcharge();
 
         $card = $this->getCard();
-
 
         if($card) {
           $data["Customer"] = [];
@@ -165,10 +167,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
           $data["Customer"]["ContactDetails"] = [
             "EmailAddress" => $card->getEmail(),
-  #         "FaxNumber" => "",
-  #         "HomePhoneNumber" => "",
-  #         "MobilePhoneNumber" => "",
-  #         "WorkPhoneNumber" => ""
           ];
         }
 
@@ -186,7 +184,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $data["Type"] = "internet";
 
 
-        $data["MerchantReference"] = "123"; $this->getMerchantReference();
+        $data["MerchantReference"] = $this->getMerchantReference();
 
         return $data;
     }
