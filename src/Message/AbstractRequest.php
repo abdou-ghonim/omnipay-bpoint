@@ -85,14 +85,14 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function sendData($data)
     {
         // don't throw exceptions for 4xx errors
-       $this->httpClient->getEventDispatcher()->addListener(
-           'request.error',
-           function ($event) {
-               if ($event['response']->isClientError()) {
-                   $event->stopPropagation();
-              }
-           }
-       );
+       #$this->httpClient->getEventDispatcher()->addListener(
+       #    'request.error',
+       #    function ($event) {
+       #        if ($event['response']->isClientError()) {
+       #            $event->stopPropagation();
+       #       }
+       #    }
+       #);
 
         $httpRequest = $this->httpClient->createRequest(
             $this->getHttpMethod(),
