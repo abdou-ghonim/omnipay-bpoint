@@ -106,7 +106,7 @@ class Response extends AbstractResponse implements ResponseInterface
     
     public function isSuccessful()
     {
-        return ($this->data['APIResponse']["ResponseCode"] == '0');
+        return ($this->data['TxnResp']["ResponseCode"] == '0');
     }
 
     public function getTransactionReference()
@@ -121,7 +121,7 @@ class Response extends AbstractResponse implements ResponseInterface
 
     public function getMessage()
     {
-        return $this->data["APIResponse"]["ResponseText"];
+        return $this->data["TxnResp"]["ResponseText"];
     }
 
     public function getAmount()
@@ -131,7 +131,7 @@ class Response extends AbstractResponse implements ResponseInterface
 
     public function getCode()
     {
-        return $this->data['APIResponse']["ResponseCode"];
+        return $this->data['TxnResp']["ResponseCode"];
     }
 
     public function getData()
