@@ -138,6 +138,11 @@ class Response extends AbstractResponse implements ResponseInterface
     {
         return $this->data;
     }
+    
+    public function getErrors()
+    {
+        return $this->data['APIResponse']['ResponseText'];
+    }
 
     public function isRedirect() {
         return false;
