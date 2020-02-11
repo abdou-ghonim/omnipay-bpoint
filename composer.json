@@ -1,5 +1,5 @@
 {
-    "name": "omnipay/omnipay-bpoint",
+    "name": "qubites/omnipay-bpoint",
     "type": "library",
     "description": "BPOINT Payment Connector driver for the Omnipay payment processing library",
     "keywords": [
