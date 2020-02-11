@@ -1,5 +1,5 @@
 {
-    "name": "wakeless-net/omnipay-bpoint",
+    "name": "omnipay/omnipay-bpoint",
     "type": "library",
     "description": "BPOINT Payment Connector driver for the Omnipay payment processing library",
     "keywords": [
