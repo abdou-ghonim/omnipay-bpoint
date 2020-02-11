@@ -1,5 +1,5 @@
 # omnipay bpoint
-** Commonwealth bank BPOINT payment processing payment using omnipay  **
+**Commonwealth bank BPOINT payment processing payment using omnipay**
 
 ```php
 
