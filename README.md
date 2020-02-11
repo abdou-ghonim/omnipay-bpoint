@@ -44,3 +44,20 @@
         }
 
 ```
+
+## Installation
+
+add to your composer.json file  
+
+"abdou-ghonim/omnipay-bpoint": "dev-master"
+
+
+"repositories": [
+    {
+        "type": "vcs",
+        "url":  "https://github.com/abdou-ghonim/omnipay-bpoint"
+    }
+]
+
+
+
